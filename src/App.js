@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts'
-import { useSelector , useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import "./App.css";
 import { SERIES_DATA, SERIES_DATA_OLD } from './helper/constants';
-import {SOCKET_URL} from './helper/constants';
-import {getWsData,getBtcData} from './redux/actions';
-import {setWebSocketData} from './redux/slice';
+import { SOCKET_URL } from './helper/constants';
+import { getWsData, getBtcData } from './redux/actions';
+import { setWebSocketData } from './redux/slice';
 
 
 const seriesDataOld = SERIES_DATA_OLD;
@@ -62,7 +62,7 @@ const App = () => {
       }
     }
   });
-  const wsdata =  useSelector((state) => state.btc.webSocketData);
+  const wsdata = useSelector((state) => state.btc.webSocketData);
   const valuebtc = useSelector((state) => state.btc.btcData);
   const dispatch = useDispatch();
 
@@ -71,14 +71,14 @@ const App = () => {
     ws.onmessage = (event => {
       const res = JSON.parse(event?.data);
       const data = typeof res == "object" ? res.content : "";
-      if(typeof data == 'object'){
+      if (typeof data == 'object') {
         dispatch(setWebSocketData(data))
       }
-    }) 
+    })
   }
 
   useEffect(() => {
-    if(typeof wsdata !== "object"){
+    if (typeof wsdata !== "object") {
       dispatch(getWsData());
     }
     updateFresh();
@@ -101,24 +101,24 @@ const App = () => {
         <Chart options={series.options} series={series.series} type="candlestick" height={350}
           width={700} />
         <table>
-            <tr>
-              <th style={{ textAlign: "left" }}>Volume</th>
-              <th style={{ textAlign: "right" }}>Bid</th>
-              <th>Ask</th>
-              <th style={{ textAlign: "right" }}>Volume</th>
-            </tr>
-          
-          { typeof wsdata === "object" ?
-          wsdata?.map(d => {
-                return (
+          <tr>
+            <th style={{ textAlign: "left" }}>Volume</th>
+            <th style={{ textAlign: "right" }}>Bid</th>
+            <th>Ask</th>
+            <th style={{ textAlign: "right" }}>Volume</th>
+          </tr>
+
+          {typeof wsdata === "object" ?
+            wsdata?.map(d => {
+              return (
                 <tr>
-                  <td style={{ background: "green", color: "#fff", textAlign: "left" }}>{d?.bidQuantity?.toFixed(3)}</td>
-                  <td style={{ background: "green", color: "#fff", textAlign: "right" }}>{d?.bid?.toFixed(3)}</td>
-                  <td style={{ background: "red", color: "#fff", textAlign: "right" }}>{d?.ask?.toFixed(3)}</td>
-                  <td style={{ background: "red", color: "#fff", textAlign: "right" }}>{d?.askQuantity?.toFixed(3)}</td>
+                  <td style={{ background: "#00800073", color: "#fff", textAlign: "left" }}>{d?.bidQuantity?.toFixed(3)}</td>
+                  <td style={{ background: "#00800073", color: "#fff", textAlign: "right" }}>{d?.bid?.toFixed(3)}</td>
+                  <td style={{ background: "#ff00009c", color: "#fff", textAlign: "right" }}>{d?.ask?.toFixed(3)}</td>
+                  <td style={{ background: "#ff00009c", color: "#fff", textAlign: "right" }}>{d?.askQuantity?.toFixed(3)}</td>
                 </tr>
-                )
-              }) : ""}    
+              )
+            }) : ""}
         </table>
       </div>
     </div>
