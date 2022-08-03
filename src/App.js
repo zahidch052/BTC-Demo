@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts'
 import { useSelector , useDispatch } from 'react-redux';
-// import {wsData , btcData} from './redux/actions';
-import {getWsData,getBtcData} from './redux/slice';
 import "./App.css";
 import { SERIES_DATA, SERIES_DATA_OLD } from './helper/constants';
+import {SOCKET_URL} from './helper/constants';
+import {getWsData,getBtcData} from './redux/actions';
+import {setWebSocketData} from './redux/slice';
 
 
 const seriesDataOld = SERIES_DATA_OLD;
@@ -64,11 +65,25 @@ const App = () => {
   const wsdata =  useSelector((state) => state.btc.webSocketData);
   const valuebtc = useSelector((state) => state.btc.btcData);
   const dispatch = useDispatch();
+
+  const updateFresh = () => {
+    const ws = new WebSocket(SOCKET_URL);
+    ws.onmessage = (event => {
+      const res = JSON.parse(event?.data);
+      const data = typeof res == "object" ? res.content : "";
+      if(typeof data == 'object'){
+        dispatch(setWebSocketData(data))
+      }
+    }) 
+  }
+
   useEffect(() => {
     if(typeof wsdata !== "object"){
       dispatch(getWsData());
     }
+    updateFresh();
   }, [])
+
   const handleKeypress = async (event) => {
     if (event.key === 'Enter') {
       dispatch(getBtcData(event.target.value));
